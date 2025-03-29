@@ -1,0 +1,152 @@
+<template>
+    <div class={computedShellClass}>
+        <div class={computedChatboxClass}>
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="header-left">
+                    <div class="agent-avatar">
+                        <lightning-icon icon-name="utility:agent_session" size="small"></lightning-icon>
+                    </div>
+                    <div class="header-title">{headerText}</div>
+                </div>
+                <div class="header-actions">
+                    <!-- Options Menu Toggle -->
+                    <div class="header-icon-wrapper" onclick={toggleOptionsMenu}>
+                        <lightning-icon icon-name="utility:threedots_vertical" size="x-small" alternative-text="Menu"></lightning-icon>
+                    </div>
+                    
+                    <!-- Options Menu -->
+                    <div if:true={showOptionsMenu} class="options-menu">
+                        <div class="option-item" onclick={toggleDarkMode}>
+                            <lightning-icon icon-name={themeIcon} size="x-small"></lightning-icon>
+                            <span>{themeModeText}</span>
+                        </div>
+                        <div if:true={allowVoiceMode} class="option-item" onclick={toggleVoiceMode}>
+                            <lightning-icon icon-name={voiceIcon} size="x-small"></lightning-icon>
+                            <span>{voiceModeText}</span>
+                        </div>
+                        <div class="option-item" onclick={toggleFullscreen}>
+                            <lightning-icon icon-name={expandIcon} size="x-small"></lightning-icon>
+                            <span>{fullscreenText}</span>
+                        </div>
+                        <div class="option-item" onclick={showEndChatConfirmation}>
+                            <lightning-icon icon-name="utility:end_call" size="x-small"></lightning-icon>
+                            <span>End Chat</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chat Messages -->
+            <div class="chat-messages">
+                <template for:each={processedMessages} for:item="msg">
+                    <div key={msg.id} class={msg.computedClass} data-id={msg.id}>
+                        <template if:true={msg.isSystem}>
+                            <div class="system-message">{msg.text}</div>
+                        </template>
+                        
+                        <template if:false={msg.isSystem}>
+                            <div class="bubble">
+                                <div if:true={msg.isAgent} class="agent-avatar-small">
+                                    <lightning-icon icon-name="utility:agent_session" size="x-small"></lightning-icon>
+                                </div>
+                                
+                                <div class="message-content">
+                                    <div class="bubble-text" data-id={msg.id}>
+                                        <!-- For plain text messages -->
+                                        <template if:false={msg.isTypingMessage}>
+                                            {msg.text}
+                                        </template>
+                                        
+                                        <!-- For typing indicator -->
+                                        <template if:true={msg.isTypingMessage}>
+                                            <div class="typing-indicator">
+                                                <div class="typing-text">{msg.text}</div>
+                                                <div class="typing-dots">
+                                                    <span class="dot"></span>
+                                                    <span class="dot"></span>
+                                                    <span class="dot"></span>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                    
+                                    <!-- Footnote/thinking process if available -->
+                                    <template if:true={msg.footnote}>
+                                        <div class="footnote-toggle" onclick={toggleFootnote} data-id={msg.id}>
+                                            <lightning-icon icon-name="utility:info" size="xx-small"></lightning-icon>
+                                            <span>Show thinking process</span>
+                                        </div>
+                                        <div class="footnote-content" data-id={msg.id}>
+                                            {msg.footnote}
+                                        </div>
+                                    </template>
+                                    
+                                    <div class="message-timestamp">{msg.timestamp}</div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </div>
+            
+            <!-- Voice Status Bar (only shown in voice mode) -->
+            <div if:true={isVoiceMode} class="voice-status-bar">
+                <div class="voice-status">{voiceStatus}</div>
+                <div class="voice-visualizer">
+                    <div class="visualizer-bar"></div>
+                    <div class="visualizer-bar"></div>
+                    <div class="visualizer-bar"></div>
+                    <div class="visualizer-bar"></div>
+                    <div class="visualizer-bar"></div>
+                </div>
+                <button if:true={isSpeaking} class="stop-voice-btn" onclick={stopAudioPlayback}>
+                    <lightning-icon icon-name="utility:close" size="x-small"></lightning-icon>
+                    <span>Stop</span>
+                </button>
+            </div>
+            
+            <!-- Chat Input -->
+            <div class="chat-input">
+                <div class="input-container">
+                    <textarea 
+                        placeholder="Type a message..." 
+                        onkeydown={handleInputKey}
+                        onkeyup={handleMessageChange}
+                        disabled={isInputDisabled}
+                    ></textarea>
+                    <div class="send-button-container">
+                        <button 
+                            class="send-button" 
+                            onclick={sendMessage} 
+                            disabled={isInputDisabled}
+                        >
+                            <lightning-icon icon-name="utility:send" size="x-small"></lightning-icon>
+                        </button>
+                    </div>
+                </div>
+                
+                <div if:true={isVoiceMode} class="voice-mode-indicator">
+                    <lightning-icon icon-name="utility:unmuted" size="x-small"></lightning-icon>
+                    <span>Voice Mode Active</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- End Chat Modal -->
+        <div if:true={showEndChatModal} class="modal-backdrop">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>End Chat</h2>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to end this chat? This will save the transcript and close the conversation.</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="cancel-button" onclick={cancelEndChat}>Cancel</button>
+                    <button class="end-button" onclick={endChat}>End Chat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

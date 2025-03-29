@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>58.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Agentforce Chat</masterLabel>
+    <description>Chat interface for interacting with Agentforce AI</description>
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__RecordPage</target>
+        <target>lightning__HomePage</target>
+        <target>lightningCommunity__Page</target>
+        <target>lightningCommunity__Default</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__AppPage,lightning__RecordPage,lightning__HomePage">
+            <property name="agentId" type="String" label="Agent ID" description="The ID of the Agentforce agent to use" required="true" />
+            <property name="headerText" type="String" label="Header Text" description="Text to display in the chat header" default="Agentforce" />
+            <property name="welcomeMessage" type="String" label="Welcome Message" description="Initial message from the agent" default="Hello! How can I assist you today?" />
+            <property name="allowVoiceMode" type="Boolean" label="Allow Voice Mode" description="Enable voice input and text-to-speech" default="false" />
+            <property name="position" type="String" label="Position" description="Position of the chat window" default="bottom-right" datasource="bottom-right,bottom-left,top-right,top-left" />
+            <property name="defaultDarkMode" type="Boolean" label="Default to Dark Mode" description="Start chat in dark mode by default" default="false" />
+        </targetConfig>
+        <targetConfig targets="lightningCommunity__Default">
+            <property name="agentId" type="String" label="Agent ID" description="The ID of the Agentforce agent to use" required="true" />
+            <property name="headerText" type="String" label="Header Text" description="Text to display in the chat header" default="Agentforce" />
+            <property name="welcomeMessage" type="String" label="Welcome Message" description="Initial message from the agent" default="Hello! How can I assist you today?" />
+            <property name="allowVoiceMode" type="Boolean" label="Allow Voice Mode" description="Enable voice input and text-to-speech" default="true" />
+            <property name="position" type="String" label="Position" description="Position of the chat window" default="bottom-right" datasource="bottom-right,bottom-left,top-right,top-left" />
+            <property name="defaultDarkMode" type="Boolean" label="Default to Dark Mode" description="Start chat in dark mode by default" default="false" />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>
